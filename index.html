@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超級華麗✨台灣人冷知識大挑戰賽</title>
+    <style>
+        :root {
+            --primary: #ff007f;
+            --secondary: #7000ff;
+            --accent: #ffee00;
+            --bg-grad: linear-gradient(135deg, #120136 0%, #03001e 50%, #7303c0 100%);
+            --card-bg: rgba(20, 10, 40, 0.85);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Microsoft JhengHei";
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-grad);
+            background-size: cover;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 華麗霓虹標題 */
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 0;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 40px var(--secondary);
+            animation: neon Blink 2s infinite alternate;
+        }
+
+        .subtitle {
+            color: var(--accent);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(255,238,0,0.5);
+        }
+
+        /* 主遊戲容器 */
+        .game-container {
+            width: 90%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(112, 0, 255, 0.4);
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        /* 關卡導覽列 */
+        .stage-badge-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            border-bottom: 2px dashed rgba(255,255,255,0.2);
+            padding-bottom: 15px;
+        }
+
+        .stage-badge {
+            padding: 10px 15px;
+            border-radius: 30px;
+            background: #222;
+            color: #888;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 1px solid #444;
+            transition: all 0.3s;
+        }
+
+        .stage-badge.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 15px var(--primary);
+            border-color: #fff;
+        }
+
+        .stage-badge.cleared {
+            background: #00ff66;
+            color: #000;
+            box-shadow: 0 0 15px #00ff66;
+            border-color: #fff;
+        }
+
+        /* 資訊列 */
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.4);
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .status-item {
+            font-size: 1.1rem;
+        }
+        .status-item span {
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        /* 題目區塊 */
+        .question-box {
+            margin: 20px 0;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-weight: bold;
+            color: #fff;
+            border-left: 5px solid var(--accent);
+            padding-left: 15px;
+        }
+
+        /* 虛擬圖片區塊 */
+        .quiz-img-mock {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #220136, #4d0b5a);
+            border: 2px solid var(--accent);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+        }
+
+        /* 選項按鈕 */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-btn {
+            background: linear-gradient(to right, #2c0c5e, #1a063b);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 18px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(255, 238, 0, 0.4);
+            transform: translateY(-2px);
+            background: linear-gradient(to right, #3d1485, #250a52);
+        }
+
+        /* 回饋與鼓勵彈窗 */
+        .feedback-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 3, 25, 0.95);
+            border-radius: 17px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feedback-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .feedback-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .feedback-title.correct {
+            color: #00ff66;
+            text-shadow: 0 0 20px rgba(0,255,102,0.6);
+        }
+
+        .feedback-title.wrong {
+            color: #ff3333;
+            text-shadow: 0 0 20px rgba(255,51,51,0.6);
+        }
+
+        .feedback-msg {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 25px;
+        }
+
+        .feedback-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent);
+            transition: transform 0.2s;
+        }
+
+        .feedback-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* 超猛舞台 & 玻璃展示櫃 */
+        .stage-clear-arena {
+            display: none;
+            text-align: center;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .arena-title {
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 0 15px var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .showcase-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 40px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        /* 玻璃展示櫃 */
+        .glass-showcase {
+            width: 260px;
+            height: 380px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 4px solid #00f3ff;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(255,255,255,0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .glass-showcase::after {
+            content: '';
+            position: absolute;
+            bottom: 0; width: 110%; height: 20px;
+            background: #333;
+            border: 2px solid #551a8b;
+            border-radius: 5px;
+        }
+
+        /* 大獎盃 */
+        .trophy {
+            font-size: 6rem;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px #ffee00);
+            cursor: pointer;
+        }
+
+        .trophy-plate {
+            background: linear-gradient(135deg, #ffee00, #ffaa00);
+            color: #000;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 20px;
+            min-width: 150px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            font-size: 1.1rem;
+        }
+
+        /* 姓名輸入 */
+        .name-input-zone {
+            margin-top: 20px;
+        }
+
+        .name-input {
+            padding: 10px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            border: 2px solid var(--primary);
+            background: #111;
+            color: #fff;
+            text-align: center;
+            width: 200px;
+        }
+
+        .name-submit {
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        /* 動畫效果 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>✨ 超級華麗 ✨<br>台灣人冷知識終極大挑戰</h1>
+        <div class="subtitle">考驗你是不是真正的台灣在地人！</div>
+    </header>
+
+    <div class="game-container" id="quiz-arena">
+        
+        <div class="stage-badge-container">
+            <div class="stage-badge active" id="badge-0">1. 地理秘境</div>
+            <div class="stage-badge" id="badge-1">2. 交通運轉</div>
+            <div class="stage-badge" id="badge-2">3. 在地物品</div>
+            <div class="stage-badge" id="badge-3">4. 每日生活</div>
+            <div class="stage-badge" id="badge-4">5. 文化傳說</div>
+        </div>
+
+        <div class="info-bar">
+            <div class="status-item">當前關卡：<span id="current-stage-title">地理秘境</span></div>
+            <div class="status-item">題號：<span id="q-progress">1 / 10</span></div>
+            <div class="status-item">當前稱號：<span id="rank-title" style="color:#00ff66;">台灣新手</span></div>
+            <div class="status-item">復活機會：<span id="life-count">❤️ 1</span></div>
+        </div>
+
+        <div class="question-box">
+            <div class="quiz-img-mock" id="quiz-image">🗺️</div>
+            <div class="question-text" id="question-text">載入中...</div>
+        </div>
+
+        <div class="options-grid" id="options-container">
+            </div>
+
+        <div class="feedback-overlay" id="feedback-layer">
+            <div class="feedback-title" id="fb-title">CORRECT!</div>
+            <div class="feedback-msg" id="fb-msg">非常讚喔！</div>
+            <button class="feedback-btn" id="fb-btn" onclick="closeFeedback()">繼續挑戰 ➔</button>
+        </div>
+
+    </div>
+
+    <div class="game-container stage-clear-arena" id="victory-arena">
+        <h2 class="arena-title">🎉 恭喜通關！榮登「台灣冷知識之神」寶座 🎉</h2>
+        <p style="color: #ffee00; font-size: 1.3rem;">你突破了所有重重難關，全台只有 1% 的人能辦到！</p>
+        
+        <div class="showcase-wrapper">
+            <div class="glass-showcase">
+                <div style="position:absolute; top: 10px; color:#00f3ff; font-size:0.8rem; letter-spacing: 2px;">GLASS SHOWCASE</div>
+                <div class="trophy" id="victory-trophy">🏆</div>
+                <div class="trophy-plate" id="plate-name">台灣之光 訪客</div>
+            </div>
+        </div>
+
+        <div class="name-input-zone">
+            <p>請在刻字板上輸入你的名字，將獎盃永久收藏於玻璃櫃中：</p>
+            <input type="text" class="name-input" id="username" placeholder="輸入你的大名" maxlength="10">
+            <button class="name-submit" onclick="updateTrophyName()">刻上名字</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 題庫資料集 (5關 * 10題 = 50題) ---
+        const stages = [
+            {
+                name: "地理秘境",
+                questions: [
+                    { q: "以下哪個行政區地理位置位於最南邊？", o: ["台南市", "台東縣", "屏東縣", "高雄市"], a: "屏東縣", img: "📍" },
+                    { q: "以下哪個行政區地理位置位於最東邊？", o: ["花蓮縣", "宜蘭縣", "台東縣", "新北市"], a: "新北市", img: "🌅" },
+                    { q: "著名古蹟朝天宮「北港」位於台灣哪一個行政區？", o: ["台北市", "雲林縣", "彰化縣", "嘉義縣"], a: "雲林縣", img: "🏮" },
+                    { q: "以黑鮪魚與王船祭聞名的「東港」位於哪一個行政區？", o: ["台東縣", "屏東縣", "高雄市", "宜蘭縣"], a: "屏東縣", img: "🐟" },
+                    { q: "我們熟悉的「龜山島」究竟是母龜還是公龜呢？日治地圖旁曾記載有「龜卵島」！", o: ["公龜", "母龜", "單純一塊石頭", "以上皆非"], a: "母龜", img: "🐢" },
+                    { q: "愛玉是夏天消暑聖品，請問「愛玉子」這種植物的生態特性為何？", o: ["全世界只有台灣特有種", "從東南亞引進的", "源自中國華南地區", "美洲原生種"], a: "全世界只有台灣特有種", img: "🍋" },
+                    { q: "台灣地圖上有台北、台南、台東，為什麼沒有設立「台西市（縣）」？", o: ["台語諧音不吉利", "其實有「臺西鄉」隸屬台中市", "歷史上被合併了", "地理風水不好"], a: "台語諧音不吉利", img: "🗺️" },
+                    { q: "台灣最高的山峰是玉山，那台灣「最矮的山」是哪一座？", o: ["高雄壽山", "台北陽明山", "彰化八卦山", "高雄蘇利山"], a: "高雄蘇利山", img: "⛰️" },
+                    { q: "台灣面積最大的縣市是哪一個？", o: ["花蓮縣", "南投縣", "台東縣", "高雄市"], a: "花蓮縣", img: "🗺️" },
+                    { q: "台灣本島海岸線最長的縣市是哪一個？", o: ["屏東縣", "花蓮縣", "台東縣", "新北市"], a: "台東縣", img: "🌊" }
+                ]
+            },
+            {
+                name: "交通運轉",
+                questions: [
+                    { q: "台灣本島鐵路網路中，地理位置「最西邊」的火車站是哪一個？", o: ["台南火車站", "台中火車站", "石兵車站", "台南台江拔林車站"], a: "台南火車站", img: "🚂" },
+                    { q: "台北捷運（北捷）各車站的出口編號，原則上是採取什麼順序方向來編排？", o: ["逆時針順序", "順時針順序", "依建造先後", "隨機編排"], a: "順時針順序", img: "🚇" },
+                    { q: "高雄捷運（高捷）「前金站」和「鹽埕埔站」中間，其實原本規劃有哪一站（後取消）？", o: ["愛河站", "五福站", "真愛碼頭站", "中正站"], a: "愛河站", img: "🚇" },
+                    { q: "台灣國道高速公路中，哪一條是全台唯一的「東西向」縱貫高速公路？", o: ["國道一號", "國道三號", "國道二號", "國道五號"], a: "國道二號", img: "🚗" },
+                    { q: "台灣最早開通客運業務的鐵路是哪一條路線？", o: ["基隆到台北", "劉銘傳鐵路", "縱貫線鐵路", "阿里山林鐵"], a: "劉銘傳鐵路", img: "🚂" },
+                    { q: "台灣高鐵各車站中，哪一個車站的站體地理位置最高？", o: ["新竹站", "苗栗站", "桃園站", "埔里站"], a: "桃園站", img: "🚄" },
+                    { q: "台灣的車牌號碼中，為了避免英文字母與數字混淆，通常不使用哪兩個英文字母？", o: ["I 和 O", "A 和 Z", "X 和 Y", "M 和 N"], a: "I 和 O", img: "🚗" },
+                    { q: "台北公車系統中，著名的「307」路線因為班次極度密集，被網民戲稱為什麼？", o: ["BRT快線", "307貪食蛇", "台北捷運第六線", "幽靈公車"], a: "307貪食蛇", img: "🚌" },
+                    { q: "台灣本島地理位置「最高」的火車站是哪一個？", o: ["阿里山祝山車站", "勝興車站", "合歡山車站", "清境車站"], a: "阿里山祝山車站", img: "🚂" },
+                    { q: "台灣澎湖跨海大橋連接了哪兩個主要島嶼？", o: ["馬公島與西嶼", "白沙島與西嶼", "吉貝島與澎湖本島", "七美島與望安島"], a: "白沙島與西嶼", img: "🌉" }
+                ]
+            },
+            {
+                name: "在地物品",
+                questions: [
+                    { q: "小吃店最常見、大家一說到「紅色、塑膠繩」馬上聯想到的那條束口繩，真實名字是？", o: ["束線帶", "邦提圈", "橡皮筋", "尼龍繩"], a: "邦提圈", img: "🔴" },
+                    { q: "小時候常吃的「足球巧克力」，包裝紙像足球，它真正的官方經典商品名字是？", o: ["大波露", "哈哈球", "七彩球", "甘百世巧克力"], a: "哈哈球", img: "⚽" },
+                    { q: "家庭為了防範陌生人隨意亂停車，放置的ㄇ字形鐵製馬路柱或防撞柱，真正名字是？", o: ["路障", "拒馬", "三角錐", "車阻"], a: "拒馬", img: "🚧" },
+                    { q: "台灣傳統市場極度常見、紅藍綠相間的編織提袋（被戲稱台灣LV），真實名字是？", o: ["茄芷袋", "阿嬤袋", "尼龍袋", "復古袋"], a: "茄芷袋", img: "🛍️" },
+                    { q: "夜市常見、外皮酥脆內裡空心、被稱為「台式馬卡龍」的傳統點心，正確名稱是？", o: ["牛粒", "小西點", "泡芙", "脆皮燒"], a: "牛粒", img: "🥯" },
+                    { q: "馬路上常見、大家口中常喊的「三角錐」，從幾何學形狀上來看其實是什麼錐？", o: ["三角錐", "圓錐", "四角錐", "六角錐"], a: "圓錐", img: "⚠️" },
+                    { q: "台灣家家戶戶幾乎都有的「大同電鍋」，其最經典、最經典的初代原始顏色是什麼？", o: ["喜慶紅色", "經典綠色", "科技銀色", "象牙白色"], a: "經典綠色", img: "🍚" },
+                    { q: "台灣藍白拖鞋可說是國民鞋，請問它最初是由哪一個政府機構研發設計改良的？", o: ["國防部（聯勤總部）", "經濟部", "台灣省政府", "菸酒公賣局"], a: "國防部（聯勤總部）", img: "🩴" },
+                    { q: "外國觀光客來台必買的「鳳梨酥」，傳統內餡其實大部分是用什麼蔬菜製作的？", o: ["冬瓜", "地瓜", "南瓜", "蘿蔔"], a: "冬瓜", img: "🍍" },
+                    { q: "辦流水席（辦桌）時最常出現的紅色塑膠圓凳，其中央有一個圓孔，主要功能是？", o: ["方便拿取與排氣疊放", "省塑料", "插陽傘", "風水透氣"], a: "方便拿取與排氣疊放", img: "🪑" }
+                ]
+            },
+            {
+                name: "每日生活",
+                questions: [
+                    { q: "台北101大樓每晚點亮的外牆燈光，是依照「紅橙黃綠藍靛紫」彩虹七色依序替換，週一是什麼顏色？", o: ["紅色", "黃色", "藍色", "紫色"], a: "紅色", img: "🏢" },
+                    { q: "台灣便利商店（如7-11）所使用的發票載具條碼，開頭的兩個英文字母通常代表什麼？", o: ["隨機產生", "手機條碼固定為 /", "發票期別", "載具類別"], a: "手機條碼固定為 /", img: "🧾" },
+                    { q: "台灣人吃湯圓習慣分顏色，傳統習俗中，冬至吃湯圓「紅湯圓」和「白湯圓」分別代表什麼？", o: ["紅招桃花，白招財", "紅招人緣（喜事），白招銀錠（學業/事業）", "純粹好看沒有差別", "紅是甜的，白是鹹的"], a: "紅招人緣（喜事），白招銀錠（學業/事業）", img: "🍡" },
+                    { q: "在台灣倒垃圾時，垃圾車播放的經典名曲除了《給愛麗絲》之外，另一首最常見的是？", o: ["《少女的祈禱》", "《命運交響曲》", "《四季》", "《新世界交響曲》"], a: "《少女的祈禱》", img: "🚛" },
+                    { q: "台灣的「統一發票」中獎號碼，是每逢單數月的幾號會進行開獎？", o: ["25號", "15號", "1號", "30號"], a: "25號", img: "💰" },
+                    { q: "台灣的郵遞區號目前（2020年後）全面推行的新制是幾碼？", o: ["3+2碼", "3+3碼", "5碼", "6碼"], a: "3+3碼", img: "✉️" },
+                    { q: "在台灣吃麥當勞，很多人會把薯條沾著什麼東西吃，這被譽為隱藏版台灣在地吃法？", o: ["蛋捲冰淇淋", "玉米湯", "砂糖", "番茄醬加砂糖"], a: "蛋捲冰淇淋", img: "🍟" },
+                    { q: "台灣健保卡上的卡號，總共有幾位數字？", o: ["10位", "12位", "16位", "8位"], a: "12位", img: "💳" },
+                    { q: "台灣人去KTV必點的牛肉麵或水餃，這項特殊的「KTV美食文化」最主要是由哪家帶起的？", o: ["錢櫃", "好樂迪", "星聚點", "享溫馨"], a: "錢櫃", img: "🎤" },
+                    { q: "在台灣買手搖飲說「一分甜」，通常是指幾分糖？", o: ["10% 糖（微糖之下）", "30% 糖", "5% 糖", "不加糖"], a: "10% 糖（微糖之下）", img: "🧋" }
+                ]
+            },
+            {
+                name: "文化傳說",
+                questions: [
+                    { q: "曾因研究「袋熊便便為什麼是方形」而榮獲搞笑諾貝爾物理獎的科學家是哪國裔？", o: ["臺裔（楊佩良教授團隊）", "日裔", "華裔", "韓裔"], a: "臺裔（楊佩良教授團隊）", img: "🐨" },
+                    { q: "台灣人非常迷信在電腦、伺服器或機房設備上放哪種零食，可以保佑機器乖乖聽話乖乖順暢？", o: ["綠色乖乖", "黃色五香乖乖", "紅色巧克力乖乖", "北海鱈魚香絲"], a: "綠色乖乖", img: "🟢" },
+                    { q: "台灣民間傳說中，如果用手指直接去指月亮，晚上睡覺時會發生什麼恐怖的事？", o: ["會做惡夢", "會被月亮割耳朵", "會肚子痛", "會掉頭髮"], a: "會被月亮割耳朵", img: "🌙" },
+                    { q: "台灣習俗中，參加完喪禮或者去完醫院，回家前通常會用什麼植物的水洗手或洗澡來驅邪？", o: ["茉莉花", "抹草（艾草）", "榕樹葉", "以上皆是"], a: "以上皆是", img: "🌿" },
+                    { q: "相傳中秋節烤肉這個「全台瘋狂」的獨特習俗，最早是由哪一個商業廣告帶動風潮的？", o: ["萬家香醬油（一家烤肉萬家香）", "金蘭烤肉醬", "黑橋牌香腸", "愛之味"], a: "萬家香醬油（一家烤肉萬家香）", img: "🥩" },
+                    { q: "台灣著名的民間信仰中，專門保佑「考試順利、金榜題名」的神明是哪一位？", o: ["文昌帝君", "月下老人", "註生娘娘", "土地公"], a: "文昌帝君", img: "✍️" },
+                    { q: "台灣俗諺說「娶老婆前，生小孩後」，意思是這兩個時期的人運氣會怎麼樣？", o: ["運氣特別差", "運氣特別旺、財運極佳", "平平淡淡", "容易生病"], a: "運氣特別旺、財運極佳", img: "👶" },
+                    { q: "台灣人在端午節正中午時，傳統上會挑戰進行什麼活動來祈求好運？", o: ["立蛋", "吃冰", "游長泳", "放風箏"], a: "立蛋", img: "🥚" },
+                    { q: "相傳全台最靈驗、位於南投，可以借「發財金」給信徒的知名土地公廟是哪一座？", o: ["烘爐地南山福德宮", "竹山紫南宮", "車城福安宮", "白沙屯拱天宮"], a: "竹山紫南宮", img: "💰" },
+                    { q: "台灣「辦桌」文化中，最後一道甜點如果端出哪一種類型的冰品，代表這場宴席非常大方豪華？", o: ["一人一桶小美冰淇淋", "一人一桶莫凡彼/哈根達斯", "傳統刨冰", "炸冰淇淋"], a: "一人一桶莫凡彼/哈根達斯", img: "🍨" }
+                ]
+            }
+        ];
+
+        // 讚美與鼓勵語庫
+        const praises = [
+            "正港台灣人就是你！👍",
+            "太神啦！這你也知道！🔥",
+            "這題超難，你居然秒答！😱",
+            "強到起飛！知識王是你！✈️",
+            "太厲害了！台灣土地公都在為你鼓掌！👏",
+            "這冷知識等級滿分，你太博學了！💯"
+        ];
+
+        // 稱號等級系統
+        const ranks = ["台灣新手", "巷仔內歐巴桑", "熱炒店常客", "夜市走跳王", "正港台灣郎", "台灣冷知識之神"];
+
+        // 遊戲狀態變數
+        let currentStageIdx = 0;
+        let currentQuestionIdx = 0;
+        let lives = 1; 
+
+        // 音效產生器
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'victory') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            }
+        }
+
+        // 初始化與渲染
+        function initGame() {
+            renderQuestion();
+            updateStatus();
+        }
+
+        function updateStatus() {
+            document.getElementById(`current-stage-title`).innerText = stages[currentStageIdx].name;
+            document.getElementById(`q-progress`).innerText = `${currentQuestionIdx + 1} / 10`;
+            document.getElementById(`life-count`).innerText = `❤️ ${lives}`;
+            
+            let totalClearedQuestions = (currentStageIdx * 10) + currentQuestionIdx;
+            let rankIdx = Math.min(Math.floor(totalClearedQuestions / 10), ranks.length - 1);
+            document.getElementById(`rank-title`).innerText = ranks[rankIdx];
+
+            for(let i=0; i<5; i++){
+                const badge = document.getElementById(`badge-${i}`);
+                if (i < currentStageIdx) {
+                    badge.className = "stage-badge cleared";
+                } else if (i === currentStageIdx) {
+                    badge.className = "stage-badge active";
+                } else {
+                    badge.className = "stage-badge";
+                }
+            }
+        }
+
+        function renderQuestion() {
+            const currentStage = stages[currentStageIdx];
+            const currentQ = currentStage.questions[currentQuestionIdx];
+
+            document.getElementById("quiz-image").innerText = currentQ.img;
+            document.getElementById("question-text").innerText = currentQ.q;
+
+            const optionsContainer = document.getElementById("options-container");
+            optionsContainer.innerHTML = "";
+
+            currentQ.o.forEach(option => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = option;
+                btn.onclick = () => checkAnswer(option, currentQ.a);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // 檢查答案
+        function checkAnswer(selected, correct) {
+            const layer = document.getElementById("feedback-layer");
+            const title = document.getElementById("fb-title");
+            const msg = document.getElementById("fb-msg");
+            const btn = document.getElementById("fb-btn");
+
+            if (selected === correct) {
+                // 答對
+                playSound('correct');
+                title.innerText = "🎉 答對了！";
+                title.className = "feedback-title correct";
+                msg.innerText = praises[Math.floor(Math.random() * praises.length)];
+                
+                // 強制將按鈕改回「繼續挑戰 ➔」
+                btn.innerText = "繼續挑戰 ➔";
+                
+                btn.onclick = () => {
+                    layer.classList.remove("show");
+                    nextQuestion();
+                };
+            } else {
+                // 答錯
+                playSound('wrong');
+                title.innerText = "❌ 答錯了！";
+                title.className = "feedback-title wrong";
+
+                if (lives > 0) {
+                    lives--;
+                    msg.innerText = `哎呀！差一點點！答案是【${correct}】。\n別氣餒，你還有最後一次復活機會！`;
+                    btn.innerText = "使用復活機會 ➔";
+                    btn.onclick = () => {
+                        layer.classList.remove("show");
+                        updateStatus();
+                    };
+                } else {
+                    msg.innerText = `慘了！答案是【${correct}】。\n本關挑戰失敗！這一關【${stages[currentStageIdx].name}】必須重頭來過！`;
+                    btn.innerText = "整個區塊重來 🔄";
+                    btn.onclick = () => {
+                        layer.classList.remove("show");
+                        resetCurrentStage();
+                    };
+                }
+            }
+            layer.classList.add("show");
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx >= 10) {
+                currentStageIdx++;
+                currentQuestionIdx = 0;
+                lives = 1; 
+                
+                if (currentStageIdx >= 5) {
+                    showVictoryScreen();
+                    return;
+                }
+            }
+            updateStatus();
+            renderQuestion();
+        }
+
+        function resetCurrentStage() {
+            currentQuestionIdx = 0;
+            lives = 1;
+            updateStatus();
+            renderQuestion();
+        }
+
+        function closeFeedback() {
+            document.getElementById("feedback-layer").classList.remove("show");
+        }
+
+        function showVictoryScreen() {
+            playSound('victory');
+            document.getElementById("quiz-arena").style.display = "none";
+            document.getElementById("victory-arena").style.display = "block";
+            
+            document.body.style.background = "linear-gradient(45deg, #ff007f, #7000ff, #00f3ff, #ffee00)";
+            document.body.style.backgroundSize = "400% 400%";
+            document.body.style.animation = "float 5s ease infinite";
+        }
+
+        function updateTrophyName() {
+            const inputName = document.getElementById("username").value.trim();
+            if (inputName) {
+                document.getElementById("plate-name").innerText = `台灣之光 ${inputName}`;
+                alert(`✨ 成功將「${inputName}」的名字刻上黃金大獎盃！已收入玻璃展示櫃中！`);
+            } else {
+                alert("請先輸入名字唷！");
+            }
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>
